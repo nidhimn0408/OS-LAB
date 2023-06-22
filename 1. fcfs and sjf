@@ -1,0 +1,66 @@
+#include <stdio.h>
+
+int wait_time(int n, int wait[], int burst[])
+{
+    wait[0] = 0;
+    int q = 0;
+    for (int i = 1; i < n; i++)
+    {
+        wait[i] = burst[i - 1] + wait[i - 1];
+        q += wait[i];
+    }
+    return q;
+}
+
+int tat_time(int n, int wait[], int burst[], int tat[])
+{
+    int q = 0;
+    for (int i = 0; i < n; i++)
+    {
+        tat[i] = burst[i] + wait[i];
+        q += tat[i];
+    }
+    return q;
+}
+
+void total_time(int n, int wait[], int burst[], int tat[])
+{
+    int total_wait = wait_time(n, wait, burst), total_tat = tat_time(n, wait, burst, tat);
+
+    printf("total wait time is %d\n", total_wait);
+    printf("total turnaround time is %d\n", total_tat);
+    printf("avg wait time is %f\n", (float)(total_wait) / n);
+    printf("avg turnaround time is %f\n", (float)(total_tat) / n);
+}
+
+void sort(int arr[], int n)
+{
+    int i, key, j;
+    for (i = 1; i < n; i++)
+    {
+        key = arr[i];
+        j = i - 1;
+        while (j >= 0 && arr[j] > key)
+        {
+            arr[j + 1] = arr[j];
+            j = j - 1;
+        }
+        arr[j + 1] = key;
+    }
+}
+
+void main()
+{
+    printf("enter num of processes\n");
+    int n;
+    scanf("%d", &n);
+    printf("enter burst time of each process\n");
+    int burst[n], wait[n], tat[n];
+    for (int i = 0; i < n; i++)
+        scanf("%d", &burst[i]);
+    printf("enter 1 for fcfs\nenter 2 for sjf\n");
+    int d; scanf("%d",&d);
+    if(d==2) sort(burst, n);
+    // for(int i=0;i<n;i++) printf("%d\n",burst[i]);
+    total_time(n, wait, burst, tat);
+}
