@@ -1,0 +1,50 @@
+#include <stdio.h>
+
+int main()
+{
+    printf("enter num of processes\n");
+    int n;
+    scanf("%d", &n);
+    printf("enter burst time of each process\n");
+    int burst[n], wait[n], tat[n], c[n], t = 0, dup[n], count = n, p = 0;
+    for (int i = 0; i < n; i++)
+    {
+        scanf("%d", &burst[i]);
+        wait[i] = 0;
+        c[i] = 0;
+        dup[i] = burst[i];
+    }
+    printf("enter quantum num\n");
+    int q;
+    scanf("%d", &q);
+
+    while (count)
+    {
+        for (int i = 0; i < n; i++)
+        {
+           
+            if (dup[i] != 0)
+            {
+                wait[i] += t - c[i];
+                if (dup[i] <= q)
+                {
+                    p = dup[i];
+                    dup[i] = 0;
+                    count--;
+                }
+                else
+                {
+                    p = q;
+                    dup[i] -= q;
+                }
+                t += p;
+                c[i] = t;
+            }
+        }
+    }
+    printf("burst time\twait time\n");
+    for (int i = 0; i < n; i++)
+    {
+        printf("%d\t\t%d\n", burst[i], wait[i]);
+    }
+}
