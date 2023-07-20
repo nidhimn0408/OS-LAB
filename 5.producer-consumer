@@ -1,0 +1,59 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+int mutex=1, full=0, empty=3, x=0;
+
+int wait(int y){ return --y; }
+
+int signal(int y){ return ++y; }
+
+void producer(){
+    mutex=wait(mutex); 
+
+    empty=wait(empty); //decrease one empty slot   
+    full=signal(full); //increase num of filled slots by one
+    x++;
+    printf("producer produces item %d\n",x);
+
+    mutex=signal(mutex);
+}
+
+void consumer(){
+    mutex=wait(mutex); 
+
+    full=wait(full); //decrease num of filled slots by one
+    empty=signal(empty); //increase num of empty slots by one
+    x--;
+    printf("consumer consumes item %d\n",x);
+
+    mutex=signal(mutex); 
+}
+
+
+int main(){
+    printf("1.Producer\t2.Consumer\t3.Exit\n");
+    int n;
+    while(1)
+    {
+        printf("Enter your choice : ");
+        scanf("%d",&n);
+        switch(n)
+        {
+            case 1: {
+                if((mutex==1) && (empty!=0)) producer();
+                else printf("Buffer is full!!\n");
+                break;
+            }
+            case 2: {
+                if((mutex==1) && (full!=0)) consumer();
+                else printf("Buffer is empty!!\n");
+                break;
+            }
+            case 3:{
+                exit(0);
+                break;
+            }
+            
+        }
+    }
+}
