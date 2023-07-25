@@ -1,1 +1,51 @@
+#include<stdio.h>
+int main(){
+    int t,n,s=0,u=0,btu[10],bts[10],bt[10],wt[10],tat[10],twt=0,ttat=0,nameu[10],names[10],name[10];
+    printf("enter num of processes : ");
+    scanf("%d",&n);
+    printf("\n");
+    for(int i=0;i<n;i++){
+        printf("enter 0 for user process and 1 for system process : ");
+        scanf("%d",&t);
+        printf("enter burst time of process %d : ",i+1);
+        if(t==0){
+            scanf("%d",&btu[u]);
+            nameu[u]=i+1;
+            u++;
+        }else{
+            scanf("%d",&bts[s]);
+            names[s]=i+1;
+            s++;
+        }
+       
+    }
 
+    for(int i=0;i<u;i++){
+        bt[i]=btu[i];
+        name[i]=nameu[i];
+    } 
+    for(int i=0;i<s;i++){
+        bt[i+u]=bts[i];
+        name[i+u]=names[i];
+    }
+
+    wt[0]=0;
+    for(int i=1;i<n;i++){
+        wt[i] = wt[i-1] + bt[i-1];
+        twt+=wt[i];
+    }
+    for(int i=0;i<n;i++){
+        tat[i] = wt[i] + bt[i];
+        ttat+=tat[i];
+    }
+    printf("\n"); 
+    printf("process\tS/U\tBT\tWT\tTAT\n");
+    for(int i=0;i<n;i++){
+        if(i<u) printf("%d\t%d\t%d\t%d\t%d\n",name[i],0,bt[i],wt[i],tat[i]);
+        else printf("%d\t%d\t%d\t%d\t%d\n",name[i],1,bt[i],wt[i],tat[i]);
+    }
+    
+    printf("avg wait time is %f\n", (float)(twt) / n);
+    printf("avg turnaround time is %f\n", (float)(ttat) / n);
+
+}
