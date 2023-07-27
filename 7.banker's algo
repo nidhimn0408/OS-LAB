@@ -36,7 +36,7 @@ for(i = 0; i < p; i++){
     }
 }
 
-for(i=0;i<p;i++){
+for(i=0;i<p;i++){ //if u have 5 processes , total loop shd be run 5 times -> as u might get one right process each time
     for( j=0;j<p;j++){
         if(finish[j]==0){
             int flag=1;
