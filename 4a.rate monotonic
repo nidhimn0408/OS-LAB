@@ -1,1 +1,124 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <stdbool.h>
+#define MAX_PROCESS 10
 
+int num_of_process, remain, observation_time;
+
+int execution_time[MAX_PROCESS], period[MAX_PROCESS], remain_time[MAX_PROCESS];
+
+// collecting details of processes
+void get_process_info()
+{
+    printf("Enter total number of processes : ");
+    scanf("%d", &num_of_process);
+    for (int i = 0; i < num_of_process; i++)
+    {
+        printf("\nProcess %d:\n", i + 1);
+        printf("Execution time: ");
+        scanf("%d", &execution_time[i]);
+        remain_time[i] = execution_time[i];
+
+        printf("Period: ");
+        scanf("%d", &period[i]);
+    }
+}
+int get_hcf(int a,int b){
+    if(a==0) return b;
+    int c, d;
+    if(a<b){
+        c=a; d=b;
+    }
+    else{
+        c=b ; d=a;
+    }
+    return get_hcf(d%c,c);
+}
+
+// calculating the observation time for scheduling timeline
+int get_observation_time()
+{
+    int dup[num_of_process];
+    for(int i=0;i<num_of_process;i++) dup[i]=period[i];
+    int lcm;
+    for(int i=0;i<num_of_process-1;i++){
+        lcm =  (dup[i] * dup[i+1]) / get_hcf(dup[i],dup[i+1]) ;
+        dup[i+1]=lcm;
+
+    }
+    return lcm;
+}
+
+// print scheduling sequence
+void print_schedule(int pl[], int cycles)
+{
+    printf("\nScheduling:\n");
+    
+    printf("Process: |");
+    for (int i = 0; i < cycles; i++)
+    {
+        if (pl[i] != 0)
+            printf(" P%d |", pl[i]);
+        else
+            printf(" __ |");
+    }
+}
+void rate_monotonic(int time)
+{
+    int process_list[100] = {0}, min = 999, next_process = 0;
+    float utilization = 0;
+    for (int i = 0; i < num_of_process; i++)
+    {
+        utilization += (1.0 * execution_time[i]) / period[i];
+    }
+
+    int n = num_of_process;
+    if (utilization > n * (pow(2, 1.0 / n) - 1))
+    {
+        printf("\nGiven problem is not schedulable under the said scheduling algorithm.\n");
+        exit(0);
+    }
+
+    for (int i = 0; i < time; i++)
+    {
+        min = 1000;
+        for (int j = 0; j < num_of_process; j++)
+        {
+            if (remain_time[j] > 0)
+            {
+                if (min > period[j])
+                {
+                    min = period[j];
+                    next_process = j;
+                }
+            }
+        }
+
+        if (remain_time[next_process] > 0)
+        {
+            process_list[i] = next_process + 1; // +1 for catering 0 array index.
+            remain_time[next_process] -= 1;
+        }
+        for (int k = 0; k < num_of_process; k++)
+        {
+            if ((i + 1) % period[k] == 0)
+            {
+                remain_time[k] = execution_time[k];
+                next_process = k;
+            }
+        }
+    }
+    
+    print_schedule(process_list, time);
+}
+
+int main()
+{
+    int option = 0;
+    get_process_info(); // collecting processes detail
+    observation_time = get_observation_time();
+
+    rate_monotonic(observation_time);
+    return 0;
+}
